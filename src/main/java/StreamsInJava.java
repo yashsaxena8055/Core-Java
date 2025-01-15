@@ -1,6 +1,8 @@
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StreamsInJava {
 
@@ -98,11 +100,11 @@ public class StreamsInJava {
 
         System.out.println(mapofItem);
         // sort object Employee by firstName;
-        Employee employee1 = new Employee("Yash","Saxena");
-        Employee employee2 = new Employee("Vaibhav","Singh");
-        Employee employee3 = new Employee("Anshita","Gupta");
-        Employee employee4 = new Employee("Aman","Goel");
-        Employee employee5 = new Employee("Abhishek","Saxena");
+        Employee employee1 = new Employee("Yash","Saxena",24);
+        Employee employee2 = new Employee("Vaibhav","Singh",26);
+        Employee employee3 = new Employee("Anshita","Gupta",19);
+        Employee employee4 = new Employee("Aman","Goel",35);
+        Employee employee5 = new Employee("Abhishek","Saxena",29);
         List<Employee> employees = new ArrayList<>();
         employees.add(employee1);
         employees.add(employee2);
@@ -115,15 +117,65 @@ public class StreamsInJava {
         for (Employee emp: employees){
             System.out.println(emp.toString());
         }
+
+        // Longest String
+        List<String> listOfStrings = Arrays.asList("abc","11313","131232dw","1231232");
+        System.out.println("Longest String:- "+ listOfStrings.stream().max(Comparator.comparingInt(String::length)).get());
+
+        // Avg age of list of Employees
+        System.out.println("Avg Age of List OF employees:- "+employees.stream().mapToInt(employee -> employee.age).average());
+
+        // list of Integers containg prime number;
+        list.stream().filter(f->{
+            for(int i=2;i<f/2;i++){
+                if(i != f && f %i ==0){
+                    return false;
+                }
+            }
+            return true;
+        }).forEach(System.out::println);
+
+        // two sorted list merged into single sorted list
+        List<Integer> list1 = Arrays.asList(1,2,5,6,23,29,30);
+        List<Integer> list2 = Arrays.asList(31,2,5,6,26,29,32);
+        List<Integer> mergedList = Stream.concat(list1.stream(),list2.stream()).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        System.out.println(mergedList);
+
+        // remove dublicates
+        List<Integer> numbersWithDuplicates = Arrays.asList(1, 2, 3, 2, 4, 1, 5, 6, 5);
+        System.out.println(numbersWithDuplicates.stream().distinct().collect(Collectors.toList()));
+        List<Transaction> transactions = Arrays.asList(
+                new Transaction("2022-01-01", 100),
+                new Transaction("2022-01-01", 200),
+                new Transaction("2022-01-02", 300),
+                new Transaction("2022-01-02", 400),
+                new Transaction("2022-01-03", 500)
+        );
+        System.out.println("transaction amount as per each day:- "+transactions.stream().collect(Collectors.groupingBy(t->t.date, Collectors.summingInt(Transaction::getAmount))));
+
+        // find kth samelest element
+        System.out.println("Kth smallest element in the array:- "+ list.stream().sorted().skip(3).findFirst().orElse(-1));
+
     }
 
 
     public static class Employee{
         private String firstname;
         private String lastname;
-        public Employee(String firstname,String lastname){
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        private int age;
+        public Employee(String firstname,String lastname,int age){
             this.firstname=firstname;
             this.lastname=lastname;
+            this.age = age;
         }
 
         public String getFirstname() {
@@ -163,6 +215,31 @@ public class StreamsInJava {
                     "firstname='" + firstname + '\'' +
                     ", lastname='" + lastname + '\'' +
                     '}';
+        }
+    }
+
+    private static class Transaction {
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
+
+        private String date;
+        private int amount;
+        public Transaction(String date, int i) {
+            this.date= date;
+            this.amount = i;
         }
     }
 }
